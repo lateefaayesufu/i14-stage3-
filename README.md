@@ -1,117 +1,79 @@
-# 🌿 Habit Tracker — Grow Daily
+# Habit Tracker — Grow Daily
 
-> _A mindful habit tracker PWA. Plant your practices, watch them grow._
-
-Dark garden aesthetic — Cormorant Garamond serif meets DM Mono precision. Built with Next.js App Router, TypeScript, Tailwind CSS, and fully local persistence.
+A mobile-first Habit Tracker Progressive Web App built for Stage 3 of the Frontend Wizards program. Built strictly from the Technical Requirements Document.
 
 ---
 
-## 📦 Stack
+## Project Overview
 
-| Layer           | Technology                             |
-| --------------- | -------------------------------------- |
-| Framework       | Next.js 14 (App Router)                |
-| Language        | TypeScript                             |
-| Styling         | Tailwind CSS + CSS custom properties   |
-| Persistence     | localStorage (fully local, no backend) |
-| Unit Tests      | Vitest + @vitest/coverage-v8           |
-| Component Tests | React Testing Library                  |
-| E2E Tests       | Playwright                             |
+Habit Tracker is a local-first PWA that allows users to sign up, log in, create and manage daily habits, track streaks, and install the app on their device. All data is persisted in localStorage — no backend, no remote database.
+
+The visual design follows a dark garden aesthetic: Cormorant Garamond serif typography, DM Mono for metadata, and a muted green palette inspired by Japanese wabi-sabi principles.
 
 ---
 
-## 🚀 Setup
+## Setup Instructions
 
 ```bash
-# 1. Clone the repo
+# 1. Clone the repository
 git clone <your-repo-url>
 cd habit-tracker
 
 # 2. Install dependencies
 npm install
 
-# 3. Run the dev server
+# 3. Install Playwright browsers (one-time)
+npx playwright install chromium
+```
+
+---
+
+## Run Instructions
+
+```bash
+# Start the development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — the splash screen will greet you.
+Open http://localhost:3000 in your browser.
+
+For production:
+
+```bash
+npm run build
+npm run start
+```
 
 ---
 
-## 🧪 Running Tests
+## Test Instructions
 
 ```bash
-# Unit tests only (with coverage report)
+# Unit tests with coverage report
 npm run test:unit
 
-# Integration / component tests
+# Integration and component tests
 npm run test:integration
 
-# End-to-end tests (requires dev server running)
+# End-to-end tests (auto-starts dev server)
 npm run test:e2e
 
-# All tests
+# Run all tests
 npm test
 ```
 
-Coverage report is generated at `coverage/` after `test:unit`.  
-Minimum threshold: **80% line coverage** across `src/lib/`.
-
-> **E2E note:** Playwright will auto-start the dev server via `webServer` config. If you want to run it manually, start `npm run dev` in a separate terminal first.
+Coverage report is generated in the `coverage/` directory after `test:unit`.
+Minimum threshold: 80% line coverage across `src/lib/`.
 
 ---
 
-## 🗂 Folder Structure
+## Local Persistence Structure
 
-```
-src/
-  app/
-    globals.css          # Design system, CSS tokens, animations
-    layout.tsx           # Root layout, font loading, PWA metadata
-    page.tsx             # / — splash screen + session-aware redirect
-    login/page.tsx       # /login — login route
-    signup/page.tsx      # /signup — signup route
-    dashboard/page.tsx   # /dashboard — protected habit dashboard
-  components/
-    auth/
-      LoginForm.tsx      # Email/password login form
-      SignupForm.tsx     # Email/password signup form
-    habits/
-      HabitCard.tsx      # Individual habit row with streak dots + actions
-      HabitForm.tsx      # Create / edit habit modal form
-      HabitList.tsx      # Renders all habits or empty state
-    shared/
-      SplashScreen.tsx         # Full-screen splash with kanji watermark
-      ProtectedRoute.tsx       # Session guard → redirects to /login
-      ServiceWorkerRegistrar.tsx  # Client-side SW registration
-  lib/
-    auth.ts              # signUp / logIn / logOut business logic
-    constants.ts         # Storage keys, error messages, timing
-    habits.ts            # toggleHabitCompletion utility
-    slug.ts              # getHabitSlug — name → data-testid slug
-    storage.ts           # All localStorage read/write operations
-    streaks.ts           # calculateCurrentStreak algorithm
-    validators.ts        # validateHabitName with exact error messages
-  types/
-    auth.ts              # User, Session types
-    habit.ts             # Habit type
-tests/
-  unit/                  # Vitest pure logic tests
-  integration/           # React Testing Library component tests
-  e2e/                   # Playwright browser tests
-public/
-  manifest.json          # PWA manifest
-  sw.js                  # Service worker (cache-first app shell)
-  icons/                 # icon-192.png, icon-512.png
-```
+All data is stored in localStorage under three keys:
 
----
+### habit-tracker-users
 
-## 💾 Local Persistence Structure
-
-All data lives in `localStorage`. Three keys:
-
-### `habit-tracker-users`
+Stores a JSON array of registered users.
 
 ```json
 [
@@ -124,15 +86,17 @@ All data lives in `localStorage`. Three keys:
 ]
 ```
 
-### `habit-tracker-session`
+### habit-tracker-session
+
+Stores the active session or null when logged out.
 
 ```json
 { "userId": "abc123", "email": "user@example.com" }
 ```
 
-Set to `null` on logout.
+### habit-tracker-habits
 
-### `habit-tracker-habits`
+Stores a JSON array of all habits across all users.
 
 ```json
 [
@@ -148,52 +112,59 @@ Set to `null` on logout.
 ]
 ```
 
-`completions` holds unique `YYYY-MM-DD` strings. Streaks are calculated client-side from this array on every render.
+Each habit belongs to a user via `userId`. Completions are unique YYYY-MM-DD strings. Streaks are calculated client-side from the completions array on every render.
 
 ---
 
-## 🌐 PWA Support
+## PWA Support
 
-| Feature        | Implementation                                                         |
-| -------------- | ---------------------------------------------------------------------- |
-| Manifest       | `public/manifest.json` — name, icons, display: standalone, theme color |
-| Service Worker | `public/sw.js` — network-first with app shell cache fallback           |
-| Registration   | `ServiceWorkerRegistrar.tsx` — client-side, registered in root layout  |
-| Icons          | `public/icons/icon-192.png` + `icon-512.png`                           |
-| Offline        | App shell loads from cache after first visit. No hard crash offline.   |
+PWA support is implemented as follows:
 
----
+- `public/manifest.json` includes name, short_name, start_url, display, background_color, theme_color, and icons for 192x192 and 512x512.
+- `public/sw.js` is a cache-first service worker that caches the app shell on install and serves it offline after the first visit.
+- `src/components/shared/ServiceWorkerRegistrar.tsx` handles client-side registration of the service worker and is mounted in the root layout.
+- Icons are located at `public/icons/icon-192.png` and `public/icons/icon-512.png`.
 
-## 🗺 Test File Map
-
-| File                                    | What it verifies                                                                                                 |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `tests/unit/slug.test.ts`               | `getHabitSlug` — lowercase, hyphenation, space collapsing, special char removal                                  |
-| `tests/unit/validators.test.ts`         | `validateHabitName` — empty, too long, trimming, exact error messages                                            |
-| `tests/unit/streaks.test.ts`            | `calculateCurrentStreak` — empty, not today, consecutive days, duplicates, gaps                                  |
-| `tests/unit/habits.test.ts`             | `toggleHabitCompletion` — add, remove, immutability, no duplicates                                               |
-| `tests/integration/auth-flow.test.tsx`  | Signup form, duplicate email error, login form, invalid credentials error                                        |
-| `tests/integration/habit-form.test.tsx` | Validation error, create habit, edit + preserve fields, delete confirmation, streak toggle                       |
-| `tests/e2e/app.spec.ts`                 | Full user journeys: splash, auth redirect, protection, signup, login, create, complete, persist, logout, offline |
+After the first load, the app shell renders offline without a hard crash.
 
 ---
 
-## ⚖️ Trade-offs & Limitations
+## Trade-offs and Limitations
 
-- **Passwords stored in plaintext** — intentional per spec (local-only, no backend, deterministic auth)
-- **No remote sync** — all data is device-local; clearing localStorage resets everything
-- **Single frequency** — only `daily` habits are supported per Stage 3 spec
-- **No real push notifications** — PWA install + offline shell only
-- **Service worker caches aggressively** — hard refresh (`Ctrl+Shift+R`) may be needed during development
-
----
-
-## 🗓 Spec Mapping
-
-Built strictly from the [Stage 3 Technical Requirements Document](https://docs.google.com/document/d/1Gp2_0pZWWnQbLc6zLS1U4wI6kO8DCC07Ea5JFjOYXlI).
-
-Every route, storage key, exported function signature, data-testid, error message, test describe block name, and exact test title matches the spec. No assumptions were made beyond what is specified.
+- Passwords are stored in plaintext in localStorage. This is intentional per the spec which requires local, deterministic authentication with no backend.
+- All data is device-local. Clearing localStorage or switching browsers resets the app completely.
+- Only daily frequency is supported. The spec limits Stage 3 to daily habits only.
+- No push notifications. PWA support covers install and offline shell only.
+- The service worker caches aggressively. During development, a hard refresh (Ctrl+Shift+R) may be needed after rebuilds to clear stale chunk references.
 
 ---
 
-_Habit Tracker — grow daily. 習_
+## Test File Map
+
+| File                                    | What it verifies                                                                                                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `tests/unit/slug.test.ts`               | `getHabitSlug` — lowercase conversion, hyphenation, space collapsing, special character removal                                                                                |
+| `tests/unit/validators.test.ts`         | `validateHabitName` — empty input, exceeding 60 characters, trimming, exact error messages                                                                                     |
+| `tests/unit/streaks.test.ts`            | `calculateCurrentStreak` — empty completions, today not completed, consecutive days, duplicate dates, broken streaks                                                           |
+| `tests/unit/habits.test.ts`             | `toggleHabitCompletion` — adding a date, removing a date, immutability, no duplicate completions                                                                               |
+| `tests/integration/auth-flow.test.tsx`  | Signup form submission, duplicate email rejection, login form submission, invalid credentials rejection                                                                        |
+| `tests/integration/habit-form.test.tsx` | Habit name validation, habit creation, editing with field preservation, delete confirmation, completion toggle and streak update                                               |
+| `tests/e2e/app.spec.ts`                 | Full user journeys: splash screen, unauthenticated redirect, dashboard protection, signup, login, habit creation, habit completion, session persistence, logout, offline shell |
+
+---
+
+## Implementation Map
+
+This project was built strictly from the Stage 3 Technical Requirements Document. The mapping is as follows:
+
+- Routes: `/`, `/login`, `/signup`, `/dashboard` match the route contract exactly.
+- Storage keys: `habit-tracker-users`, `habit-tracker-session`, `habit-tracker-habits` match the persistence contract exactly.
+- Type exports: `User`, `Session`, `Habit` match the type contract exactly.
+- Utility functions: `getHabitSlug`, `validateHabitName`, `calculateCurrentStreak`, `toggleHabitCompletion` match the function contract exactly including signatures and error messages.
+- All data-testid values match the UI contract exactly.
+- All test describe block names and test titles match the spec exactly.
+- All package scripts match the required script names exactly.
+
+---
+
+Habit Tracker — grow daily.
