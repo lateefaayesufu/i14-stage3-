@@ -1,7 +1,7 @@
 // ─── Unit Tests: validateHabitName ───────────────────────────────────────────
 
 import { describe, it, expect } from 'vitest'
-import { validateHabitName } from '@/lib/validators'
+import { validateHabitName } from '../../src/lib/validators'
 
 describe('validateHabitName', () => {
   it('returns an error when habit name is empty', () => {
