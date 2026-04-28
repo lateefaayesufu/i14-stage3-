@@ -1,0 +1,261 @@
+"use client";
+
+// ─── LoginForm ───────────────────────────────────────────────────────────────
+// Upgraded: animated error slide-in, pulsing loading state on submit.
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { logIn } from "@/lib/auth";
+
+export default function LoginForm() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const result = logIn(email, password);
+
+    if (result.ok) {
+      router.replace("/dashboard");
+    } else {
+      setError(result.error);
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="animate-slide-up" style={{ opacity: 0 }}>
+      {/* Heading */}
+      <h1
+        className="font-serif"
+        style={{
+          fontSize: 40,
+          fontWeight: 300,
+          fontStyle: "italic",
+          color: "var(--garden-text)",
+          lineHeight: 1.1,
+          marginBottom: 6,
+        }}
+      >
+        Welcome
+        <br />
+        back.
+      </h1>
+      <p
+        className="font-mono"
+        style={{
+          fontSize: 9,
+          letterSpacing: "2px",
+          textTransform: "uppercase",
+          color: "var(--garden-muted)",
+          marginBottom: 32,
+        }}
+      >
+        sign in to continue
+      </p>
+
+      <form onSubmit={handleSubmit} noValidate>
+        {/* Email */}
+        <div style={{ marginBottom: 16 }}>
+          <label htmlFor="login-email" className="garden-label">
+            Email
+          </label>
+          <input
+            id="login-email"
+            data-testid="auth-login-email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError(null);
+            }}
+            placeholder="you@example.com"
+            className="garden-input"
+            required
+          />
+        </div>
+
+        {/* Password */}
+        <div style={{ marginBottom: 24 }}>
+          <label htmlFor="login-password" className="garden-label">
+            Password
+          </label>
+          <input
+            id="login-password"
+            data-testid="auth-login-password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError(null);
+            }}
+            placeholder="••••••••"
+            className="garden-input"
+            required
+          />
+        </div>
+
+        {/* Error message — animated slide-in */}
+        {error && (
+          <div
+            role="alert"
+            className="animate-slide-up"
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 8,
+              background: "rgba(232,115,90,0.06)",
+              border: "0.5px solid rgba(232,115,90,0.25)",
+              borderRadius: 8,
+              padding: "10px 12px",
+              marginBottom: 16,
+              opacity: 0,
+            }}
+          >
+            <span
+              style={{
+                color: "#e8735a",
+                fontSize: 10,
+                marginTop: 1,
+                flexShrink: 0,
+              }}
+            >
+              ✕
+            </span>
+            <p
+              style={{
+                fontSize: 11,
+                color: "#e8735a",
+                letterSpacing: "0.3px",
+                lineHeight: 1.4,
+              }}
+            >
+              {error}
+            </p>
+          </div>
+        )}
+
+        {/* Submit */}
+        <button
+          data-testid="auth-login-submit"
+          type="submit"
+          disabled={loading}
+          className="garden-btn-primary"
+          style={{
+            marginBottom: 20,
+            opacity: loading ? 0.7 : 1,
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {loading ? (
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+              }}
+            >
+              <LoadingDots />
+              entering
+            </span>
+          ) : (
+            "enter the garden →"
+          )}
+        </button>
+      </form>
+
+      {/* Divider */}
+      <div
+        aria-hidden
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 20,
+          opacity: 0.25,
+        }}
+      >
+        <div
+          style={{
+            flex: 1,
+            height: "0.5px",
+            background: "rgba(255,255,255,0.12)",
+          }}
+        />
+        <span
+          className="font-mono"
+          style={{
+            fontSize: 8,
+            letterSpacing: "2px",
+            color: "rgba(255,255,255,0.4)",
+          }}
+        >
+          or
+        </span>
+        <div
+          style={{
+            flex: 1,
+            height: "0.5px",
+            background: "rgba(255,255,255,0.12)",
+          }}
+        />
+      </div>
+
+      {/* Switch to signup */}
+      <p
+        className="font-mono"
+        style={{
+          fontSize: 10,
+          color: "rgba(255,255,255,0.2)",
+          textAlign: "center",
+          letterSpacing: "0.5px",
+        }}
+      >
+        no account?{" "}
+        <Link
+          href="/signup"
+          style={{
+            color: "var(--garden-muted)",
+            textDecoration: "none",
+            transition: "color 0.15s",
+          }}
+        >
+          sign up
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+// ── Animated loading dots ──────────────────────────────────────────────────────
+function LoadingDots() {
+  return (
+    <span style={{ display: "inline-flex", gap: 3, alignItems: "center" }}>
+      {[0, 0.2, 0.4].map((delay, i) => (
+        <span
+          key={i}
+          className="animate-breathe"
+          style={{
+            width: 3,
+            height: 3,
+            borderRadius: "50%",
+            background: "var(--garden-green)",
+            display: "inline-block",
+            animationDelay: `${delay}s`,
+          }}
+        />
+      ))}
+    </span>
+  );
+}
