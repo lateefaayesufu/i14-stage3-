@@ -12,8 +12,8 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: mockReplace }),
 }));
 
-import LoginForm from "../../src/app/components/auth/LoginForm.tsx";
-import SignupForm from "../../src/app/components/auth/SignupForm.tsx";
+import LoginForm from "../../src/components/auth/LoginForm.tsx";
+import SignupForm from "../../src/components/auth/SignupForm.tsx";
 import { STORAGE_KEYS } from "../../src/lib/constants";
 
 beforeEach(() => {

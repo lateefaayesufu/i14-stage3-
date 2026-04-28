@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSession } from "@/lib/storage";
-import SplashScreen from "@/app/components/shared/SplashScreen";
+import SplashScreen from "@/components/shared/SplashScreen";
 import { SPLASH_DURATION_MS } from "@/lib/constants";
 
 type Stage = "enter" | "splash" | "done";

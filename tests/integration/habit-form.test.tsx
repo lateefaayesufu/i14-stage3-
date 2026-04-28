@@ -11,9 +11,9 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: mockReplace }),
 }));
 
-import HabitForm from "../../src/app/components/habits/HabitForm.tsx";
-import HabitList from "../../src/app/components/habits/HabitList.tsx";
-import HabitCard from "../../src/app/components/habits/HabitCard.tsx";
+import HabitForm from "../../src/components/habits/HabitForm.tsx";
+import HabitList from "../../src/components/habits/HabitList.tsx";
+import HabitCard from "../../src/components/habits/HabitCard.tsx";
 import { STORAGE_KEYS } from "../../src/lib/constants";
 import type { Habit } from "../../src/types/habit";
 

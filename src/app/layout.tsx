@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import ServiceWorkerRegistrar from "@/app/components/shared/ServiceWorkerRegistrar";
-import AmbientPlayer from "@/app/components/shared/AmbientPlayer";
+import ServiceWorkerRegistrar from "@/components/shared/ServiceWorkerRegistrar";
+import AmbientPlayer from "@/components/shared/AmbientPlayer";
 import "./globals.css";
 
 export const metadata: Metadata = {
