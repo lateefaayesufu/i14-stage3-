@@ -167,4 +167,6 @@ This project was built strictly from the Stage 3 Technical Requirements Document
 
 ---
 
+Minimum 80% line coverage required for `src/lib/` utilities.
+
 Habit Tracker — grow daily.
