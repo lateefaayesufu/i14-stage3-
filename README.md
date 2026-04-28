@@ -16,7 +16,7 @@ The visual design follows a dark garden aesthetic: Cormorant Garamond serif typo
 
 ```bash
 # 1. Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/lateefaayesufu/i14-stage3-
 cd habit-tracker
 
 # 2. Install dependencies
