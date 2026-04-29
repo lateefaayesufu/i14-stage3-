@@ -21,4 +21,4 @@ export const VALIDATION = {
 } as const;
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
-export const SPLASH_DURATION_MS = 1600;
+export const SPLASH_DURATION_MS = 2000;
